@@ -1,4 +1,4 @@
-package org.example.domain
+package com.example.myapplication.omok.domain
 
 class Board private constructor(private val stones: Stones) {
 

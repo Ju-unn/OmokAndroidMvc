@@ -1,4 +1,4 @@
-package org.example.domain
+package com.example.myapplication.omok.domain
 
 class Column private constructor(private val letter: Char) {
 

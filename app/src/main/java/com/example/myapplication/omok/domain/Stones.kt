@@ -1,4 +1,4 @@
-package org.example.domain
+package com.example.myapplication.omok.domain
 
 class Stones private constructor(private val cells: MutableMap<Position, Stone>) {
 

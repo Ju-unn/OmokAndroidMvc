@@ -1,4 +1,4 @@
-package org.example.domain
+package com.example.myapplication.omok.domain
 
 // 보드와 진행 상태를 묶어 게임 전체 규칙을 담당하는 도메인 루트
 class OmokGame private constructor(

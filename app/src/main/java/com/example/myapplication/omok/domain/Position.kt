@@ -1,4 +1,4 @@
-package org.example.domain
+package com.example.myapplication.omok.domain
 
 class Position private constructor(
     private val column: Column,

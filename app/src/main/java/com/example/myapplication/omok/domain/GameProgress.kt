@@ -1,4 +1,4 @@
-package org.example.domain
+package com.example.myapplication.omok.domain
 
 // 게임의 진행 상태(현재 차례 + 종료 여부)를 관리
 class GameProgress private constructor(

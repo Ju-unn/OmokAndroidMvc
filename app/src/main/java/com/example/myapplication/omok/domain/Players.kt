@@ -1,4 +1,4 @@
-package org.example.domain
+package com.example.myapplication.omok.domain
 
 class Players private constructor(
     private val players: List<Player>,

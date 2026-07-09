@@ -1,4 +1,4 @@
-package org.example.domain
+package com.example.myapplication.omok.domain
 
 class ForbiddenChecker private constructor(private val board: Board) {
 

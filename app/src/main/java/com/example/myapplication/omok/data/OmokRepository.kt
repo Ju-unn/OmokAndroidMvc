@@ -39,4 +39,10 @@ class OmokRepository(
     }
 
     suspend fun getMovesInOrder(roomId: Long): List<MoveEntity> = moveDao.getMovesInOrder(roomId)
+
+    // 다시 시작: 수순을 비우고 방을 다시 '진행중'으로 되돌린다
+    suspend fun restartRoom(roomId: Long) {
+        moveDao.deleteByRoom(roomId)
+        gameRoomDao.updateResult(roomId, GameRoomEntity.STATUS_IN_PROGRESS, null)
+    }
 }

@@ -17,4 +17,8 @@ interface MoveDao {
     // 다음 수의 번호를 정할 때 사용 (지금까지 둔 수 + 1)
     @Query("SELECT COUNT(*) FROM moves WHERE roomId = :roomId")
     suspend fun countMoves(roomId: Long): Int
+
+    // 다시 시작할 때 그 방의 수순 기록을 비운다
+    @Query("DELETE FROM moves WHERE roomId = :roomId")
+    suspend fun deleteByRoom(roomId: Long)
 }

@@ -6,6 +6,7 @@ class OmokRepository(
     private val userDao: UserDao,
     private val gameRoomDao: GameRoomDao,
     private val moveDao: MoveDao,
+    private val gameResultDao: GameResultDao,
 ) {
 
     // --- 사용자 ---
@@ -27,8 +28,30 @@ class OmokRepository(
 
     suspend fun findRoom(roomId: Long): GameRoomEntity? = gameRoomDao.findById(roomId)
 
-    suspend fun finishRoom(roomId: Long, winnerStone: String) =
+    // 승부 확정: 방 상태를 '종료'로 바꾸고,
+    // ① 보관용 원본에 "누가 이겼다" 한 줄 추가 ② 조회용 카운터를 +1 갱신.
+    // 원본이 남아 있으므로 이후 방을 다시 시작해도 전적은 사라지지 않는다.
+    suspend fun finishRoom(roomId: Long, winnerStone: String) {
         gameRoomDao.updateResult(roomId, GameRoomEntity.STATUS_FINISHED, winnerStone)
+        val room = gameRoomDao.findById(roomId) ?: return
+        val winnerId = winnerUserId(room, winnerStone)
+        val loserId = loserUserId(room, winnerStone)
+        gameResultDao.insert(
+            GameResultEntity(roomId = roomId, winnerUserId = winnerId, loserUserId = loserId)
+        )
+        userDao.incrementWins(winnerId)
+        userDao.incrementLosses(loserId)
+    }
+
+    private fun winnerUserId(room: GameRoomEntity, winnerStone: String): Long {
+        if (winnerStone == GameRoomEntity.STONE_BLACK) return room.blackUserId
+        return room.whiteUserId
+    }
+
+    private fun loserUserId(room: GameRoomEntity, winnerStone: String): Long {
+        if (winnerStone == GameRoomEntity.STONE_BLACK) return room.whiteUserId
+        return room.blackUserId
+    }
 
     // --- 수순 ---
 
@@ -48,14 +71,15 @@ class OmokRepository(
 
     // --- 전적 ---
 
-    // 사용자마다 승/패/진행중 개수를 세서 모은다. 저장된 값이 아니라 매번 계산한 값이다.
+    // 사용자마다 전적을 모은다. 승/패는 users의 카운터를 바로 읽고(조회용 캐시),
+    // 진행중은 방 상태에서 센다. 카운터가 의심스러우면 game_results에서 재계산할 수 있다.
     suspend fun getUserRecords(): List<UserRecord> {
         val users = userDao.getAll()
         return users.map { user ->
             UserRecord(
                 userName = user.name,
-                wins = gameRoomDao.countWins(user.id),
-                losses = gameRoomDao.countLosses(user.id),
+                wins = user.wins,
+                losses = user.losses,
                 inProgressCount = gameRoomDao.countInProgress(user.id),
             )
         }

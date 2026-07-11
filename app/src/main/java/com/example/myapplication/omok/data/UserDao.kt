@@ -18,4 +18,12 @@ interface UserDao {
     // :name 자리에 파라미터 값이 안전하게 바인딩된다 (문자열 이어붙이기 금지)
     @Query("SELECT * FROM users WHERE name = :name")
     suspend fun findByName(name: String): UserEntity?
+
+    // 승부 확정 시 카운터 갱신. "wins + 1"을 DB 안에서 계산하므로
+    // 읽어서 더하고 다시 쓰는 것보다 안전하다 (그 사이에 끼어들 틈이 없다)
+    @Query("UPDATE users SET wins = wins + 1 WHERE id = :userId")
+    suspend fun incrementWins(userId: Long)
+
+    @Query("UPDATE users SET losses = losses + 1 WHERE id = :userId")
+    suspend fun incrementLosses(userId: Long)
 }

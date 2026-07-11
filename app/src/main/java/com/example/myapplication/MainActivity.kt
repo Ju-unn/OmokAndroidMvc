@@ -50,6 +50,7 @@ class MainActivity : ComponentActivity() {
             userDao = database.userDao(),
             gameRoomDao = database.gameRoomDao(),
             moveDao = database.moveDao(),
+            gameResultDao = database.gameResultDao(),
         )
         // lifecycleScope: 이 화면이 살아 있는 동안만 유효한 코루틴 작업장
         gameController = GameController(repository, lifecycleScope)

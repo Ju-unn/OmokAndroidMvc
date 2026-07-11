@@ -7,20 +7,33 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.example.myapplication.omok.controller.GameController
+import com.example.myapplication.omok.controller.UserController
 import com.example.myapplication.omok.data.GameRoomEntity
 import com.example.myapplication.omok.data.OmokDatabase
 import com.example.myapplication.omok.data.OmokRepository
 import com.example.myapplication.omok.view.OmokScreen
+import com.example.myapplication.omok.view.UserScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import kotlinx.coroutines.launch
 
-// 앱 진입점: Controller를 생성하고 View(OmokScreen)와 연결 (콘솔 Main.kt의 역할)
+// 화면 종류: 내비게이션 라이브러리 없이 "현재 화면" 상태값 하나로 전환한다
+private enum class Screen {
+    USER_MANAGEMENT,
+    GAME
+}
+
+// 앱 진입점: Controller들을 생성하고 View와 연결 (콘솔 Main.kt의 역할)
 class MainActivity : ComponentActivity() {
 
-    private lateinit var controller: GameController
+    private lateinit var gameController: GameController
+    private lateinit var userController: UserController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,22 +46,33 @@ class MainActivity : ComponentActivity() {
             moveDao = database.moveDao(),
         )
         // lifecycleScope: 이 화면이 살아 있는 동안만 유효한 코루틴 작업장
-        controller = GameController(repository, lifecycleScope)
+        gameController = GameController(repository, lifecycleScope)
+        userController = UserController(repository, lifecycleScope)
+        userController.loadUsers()
 
-        // 임시 연결 — 8단계에서 사용자 관리·방 목록 화면이 생기면 교체된다.
-        // 지금은 기본 사용자 2명과 연습 방 하나를 만들어 저장이 동작하는지 확인한다.
+        // 임시 연결 — 8단계에서 방 목록 화면이 생기면 방 선택 시 attachRoom 하도록 교체된다.
         lifecycleScope.launch {
             val roomId = prepareDefaultRoom(repository)
-            controller.attachRoom(roomId)
+            gameController.attachRoom(roomId)
         }
 
         setContent {
             MyApplicationTheme {
+                // 현재 화면 상태값. 이 값이 바뀌면 Compose가 다른 화면을 그린다
+                var currentScreen by remember { mutableStateOf(Screen.USER_MANAGEMENT) }
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    OmokScreen(
-                        controller = controller,
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    when (currentScreen) {
+                        Screen.USER_MANAGEMENT -> UserScreen(
+                            controller = userController,
+                            onGameStartClick = { currentScreen = Screen.GAME },
+                            modifier = Modifier.padding(innerPadding)
+                        )
+
+                        Screen.GAME -> OmokScreen(
+                            controller = gameController,
+                            modifier = Modifier.padding(innerPadding)
+                        )
+                    }
                 }
             }
         }

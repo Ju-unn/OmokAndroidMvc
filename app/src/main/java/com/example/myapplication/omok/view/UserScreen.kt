@@ -28,7 +28,7 @@ import com.example.myapplication.omok.controller.UserMessage
 @Composable
 fun UserScreen(
     controller: UserController,
-    onGameStartClick: () -> Unit,
+    onRoomListClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state = controller.uiState
@@ -84,10 +84,10 @@ fun UserScreen(
             }
         }
         Button(
-            onClick = onGameStartClick,
+            onClick = onRoomListClick,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("게임 시작")
+            Text("방 목록으로")
         }
     }
 }

@@ -52,8 +52,7 @@ class GameController(
         roomId = id
         scope.launch {
             val moves = repository.getMovesInOrder(id)
-            if (moves.isEmpty()) return@launch // 새 방이면 복원할 것이 없다
-
+            // 빈 방이면 빈 보드가 그대로 결과가 된다 (다른 방에서 넘어와도 보드가 초기화되도록)
             val restored = OmokGame.create()
             var lastPosition: Position? = null
             var winner: Stone? = null

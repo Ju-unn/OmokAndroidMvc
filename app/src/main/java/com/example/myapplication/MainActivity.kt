@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.example.myapplication.omok.controller.GameController
+import com.example.myapplication.omok.data.GameRoomEntity
 import com.example.myapplication.omok.data.OmokDatabase
 import com.example.myapplication.omok.data.OmokRepository
 import com.example.myapplication.omok.view.OmokScreen
@@ -53,11 +54,13 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // 기본 사용자(흑돌/백돌)를 한 번만 만들고, 매 실행마다 새 연습 방을 연다
-    // (6단계에서 "최근 진행중 방 이어하기"로 바뀐다)
+    // 기본 사용자(흑돌/백돌)를 한 번만 만들고,
+    // 진행 중인 방이 있으면 그 방을 이어서 열고, 없으면 새 연습 방을 만든다
     private suspend fun prepareDefaultRoom(repository: OmokRepository): Long {
         val blackId = repository.findUserByName("흑돌")?.id ?: repository.addUser("흑돌")
         val whiteId = repository.findUserByName("백돌")?.id ?: repository.addUser("백돌")
-        return repository.createRoom("연습 게임", blackId, whiteId)
+        val inProgress = repository.getRooms()
+            .firstOrNull { room -> room.status == GameRoomEntity.STATUS_IN_PROGRESS }
+        return inProgress?.id ?: repository.createRoom("연습 게임", blackId, whiteId)
     }
 }

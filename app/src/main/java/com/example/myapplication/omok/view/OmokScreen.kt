@@ -49,7 +49,7 @@ fun OmokScreen(controller: GameController, modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.titleLarge
         )
         Text(
-            text = state.message?.let { messageText(it) } ?: "",
+            text = state.message?.let { message -> messageText(message) } ?: "",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.error
         )

@@ -30,7 +30,7 @@ abstract class OmokDatabase : RoomDatabase() {
                     context.applicationContext,
                     OmokDatabase::class.java,
                     "omok.db", // 폰 저장소에 생기는 실제 DB 파일 이름
-                ).build().also { instance = it }
+                ).build().also { database -> instance = database }
             }
     }
 }

@@ -20,7 +20,7 @@ class Column private constructor(private val letter: Char) {
         fun isValidLetter(letter: Char): Boolean = letter in FIRST..LAST
 
         // A~O 전체 열 목록 반환
-        fun all(): List<Column> = (FIRST..LAST).map { Column(it) }
+        fun all(): List<Column> = (FIRST..LAST).map { letter -> Column(letter) }
     }
 
     // 0-based 인덱스로 변환 (A=0, B=1, ...)

@@ -20,7 +20,7 @@ class Row private constructor(private val number: Int) {
         fun isValidNumber(number: Int): Boolean = number in FIRST..LAST
 
         // 1~15 전체 행 목록 반환
-        fun all(): List<Row> = (FIRST..LAST).map { Row(it) }
+        fun all(): List<Row> = (FIRST..LAST).map { number -> Row(number) }
     }
 
     // 0-based 인덱스로 변환 (1=0, 2=1, ...)

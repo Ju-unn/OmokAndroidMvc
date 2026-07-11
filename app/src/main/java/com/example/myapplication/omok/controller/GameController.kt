@@ -46,9 +46,27 @@ class GameController(
     var uiState by mutableStateOf(createUiState(lastPosition = null, winner = null, message = null))
         private set
 
-    // 저장 대상 방을 지정한다 (6단계에서 저장된 수순 복원도 여기에 추가된다)
+    // 저장 대상 방을 지정하고, 저장된 수순이 있으면 재생해서 보드를 복원한다.
+    // 보드를 통째로 저장하지 않아도, 같은 수를 같은 순서로 다시 두면 같은 보드가 된다.
     fun attachRoom(id: Long) {
         roomId = id
+        scope.launch {
+            val moves = repository.getMovesInOrder(id)
+            if (moves.isEmpty()) return@launch // 새 방이면 복원할 것이 없다
+
+            val restored = OmokGame.create()
+            var lastPosition: Position? = null
+            var winner: Stone? = null
+            moves.forEach { move ->
+                val position = Position.from(move.position)
+                val stone = restored.currentStone()
+                val won = restored.placeCurrentStone(position)
+                lastPosition = position
+                if (won) winner = stone
+            }
+            game = restored
+            uiState = createUiState(lastPosition = lastPosition, winner = winner, message = null)
+        }
     }
 
     // 보드의 교차점을 터치했을 때 호출: 점유·금수 검사 후 착수 (판단은 도메인이 수행)

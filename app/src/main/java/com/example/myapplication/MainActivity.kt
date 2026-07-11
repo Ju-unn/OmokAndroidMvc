@@ -89,6 +89,11 @@ class MainActivity : ComponentActivity() {
 
                         Screen.GAME -> OmokScreen(
                             controller = gameController,
+                            onRoomListClick = {
+                                // 돌아갈 때 목록을 새로 읽어 방 상태(진행중/종료)를 최신으로 보여준다
+                                roomListController.loadRooms()
+                                currentScreen = Screen.ROOM_LIST
+                            },
                             modifier = Modifier.padding(innerPadding)
                         )
 

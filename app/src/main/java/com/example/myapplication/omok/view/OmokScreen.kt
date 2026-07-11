@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,9 +34,13 @@ import com.example.myapplication.omok.domain.Row as BoardRow
 // 보드 배경(나무) 색상
 private val BoardBackground = Color(0xFFD9A55C)
 
-// 오목 게임 전체 화면: 상태 안내 + 보드 + 다시 시작 버튼
+// 오목 게임 전체 화면: 상태 안내 + 보드 + 다시 시작·방 목록 버튼
 @Composable
-fun OmokScreen(controller: GameController, modifier: Modifier = Modifier) {
+fun OmokScreen(
+    controller: GameController,
+    onRoomListClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val state = controller.uiState
     Column(
         modifier = modifier
@@ -60,8 +65,13 @@ fun OmokScreen(controller: GameController, modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .aspectRatio(1f)
         )
-        Button(onClick = controller::onRestartClick) {
-            Text("다시 시작")
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Button(onClick = controller::onRestartClick) {
+                Text("다시 시작")
+            }
+            Button(onClick = onRoomListClick) {
+                Text("방 목록으로")
+            }
         }
     }
 }

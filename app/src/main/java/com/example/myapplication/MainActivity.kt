@@ -14,11 +14,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.example.myapplication.omok.controller.GameController
+import com.example.myapplication.omok.controller.RecordController
 import com.example.myapplication.omok.controller.RoomListController
 import com.example.myapplication.omok.controller.UserController
 import com.example.myapplication.omok.data.OmokDatabase
 import com.example.myapplication.omok.data.OmokRepository
 import com.example.myapplication.omok.view.OmokScreen
+import com.example.myapplication.omok.view.RecordScreen
 import com.example.myapplication.omok.view.RoomListScreen
 import com.example.myapplication.omok.view.UserScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
@@ -27,7 +29,8 @@ import com.example.myapplication.ui.theme.MyApplicationTheme
 private enum class Screen {
     USER_MANAGEMENT,
     ROOM_LIST,
-    GAME
+    GAME,
+    RECORDS
 }
 
 // 앱 진입점: Controller들을 생성하고 View와 연결 (콘솔 Main.kt의 역할)
@@ -36,6 +39,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var gameController: GameController
     private lateinit var userController: UserController
     private lateinit var roomListController: RoomListController
+    private lateinit var recordController: RecordController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +55,7 @@ class MainActivity : ComponentActivity() {
         gameController = GameController(repository, lifecycleScope)
         userController = UserController(repository, lifecycleScope)
         roomListController = RoomListController(repository, lifecycleScope)
+        recordController = RecordController(repository, lifecycleScope)
         userController.loadUsers()
 
         setContent {
@@ -75,11 +80,24 @@ class MainActivity : ComponentActivity() {
                                 gameController.attachRoom(roomId)
                                 currentScreen = Screen.GAME
                             },
+                            onRecordsClick = {
+                                recordController.loadRecords()
+                                currentScreen = Screen.RECORDS
+                            },
                             modifier = Modifier.padding(innerPadding)
                         )
 
                         Screen.GAME -> OmokScreen(
                             controller = gameController,
+                            modifier = Modifier.padding(innerPadding)
+                        )
+
+                        Screen.RECORDS -> RecordScreen(
+                            controller = recordController,
+                            onBackClick = {
+                                roomListController.loadRooms()
+                                currentScreen = Screen.ROOM_LIST
+                            },
                             modifier = Modifier.padding(innerPadding)
                         )
                     }

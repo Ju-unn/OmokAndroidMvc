@@ -15,6 +15,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +34,7 @@ import com.example.myapplication.omok.data.UserEntity
 fun RoomListScreen(
     controller: RoomListController,
     onRoomEnterClick: (Long) -> Unit,
+    onRecordsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state = controller.uiState
@@ -47,10 +49,19 @@ fun RoomListScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Text(
-            text = "게임방",
-            style = MaterialTheme.typography.titleLarge
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "게임방",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f)
+            )
+            TextButton(onClick = onRecordsClick) {
+                Text("전적 보기")
+            }
+        }
         OutlinedTextField(
             value = titleInput,
             onValueChange = { newValue -> titleInput = newValue },

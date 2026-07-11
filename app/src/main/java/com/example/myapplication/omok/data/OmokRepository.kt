@@ -45,4 +45,19 @@ class OmokRepository(
         moveDao.deleteByRoom(roomId)
         gameRoomDao.updateResult(roomId, GameRoomEntity.STATUS_IN_PROGRESS, null)
     }
+
+    // --- 전적 ---
+
+    // 사용자마다 승/패/진행중 개수를 세서 모은다. 저장된 값이 아니라 매번 계산한 값이다.
+    suspend fun getUserRecords(): List<UserRecord> {
+        val users = userDao.getAll()
+        return users.map { user ->
+            UserRecord(
+                userName = user.name,
+                wins = gameRoomDao.countWins(user.id),
+                losses = gameRoomDao.countLosses(user.id),
+                inProgressCount = gameRoomDao.countInProgress(user.id),
+            )
+        }
+    }
 }
